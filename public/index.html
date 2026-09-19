@@ -182,6 +182,64 @@
           </button>
         </nav>
 
+        <!-- Procurement Pipeline Tracker Widget -->
+        <div class="sidebar-pipeline-widget" id="sidebar-pipeline-widget">
+          <div class="pipeline-widget-header">
+            <span class="header-title">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span>สถานะงานในหน้านี้</span>
+            </span>
+            <span class="pipeline-tip">คลิกเพื่อกรอง</span>
+          </div>
+
+          <div class="pipeline-cards">
+            <!-- 1. PR ยังไม่ได้ออก จากทั้งหมดกี่รายการในหน้านี้ -->
+            <div class="pipeline-item" id="pipeline-pr" role="button" tabindex="0" title="คลิกเพื่อกรองเฉพาะรายการที่ยังไม่ได้ออก PR">
+              <div class="pipeline-item-top">
+                <span class="pipeline-label">PR ยังไม่ได้ออก</span>
+                <span class="pipeline-tag tag-amber">รอ PR</span>
+              </div>
+              <div class="pipeline-metric">
+                <strong class="pipeline-num text-amber" id="stat-no-pr">0</strong>
+                <span class="pipeline-denom">/ จากทั้งหมด <span id="stat-total-records">0</span> รายการ</span>
+              </div>
+              <div class="pipeline-bar-wrap">
+                <div class="pipeline-bar bar-amber" id="bar-pr" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- 2. PO ยังไม่ได้ออก จากจำนวนที่ออก PR กี่รายการในหน้านี้ -->
+            <div class="pipeline-item" id="pipeline-po" role="button" tabindex="0" title="คลิกเพื่อกรองเฉพาะรายการที่ออก PR แล้วแต่ยังไม่ออก PO">
+              <div class="pipeline-item-top">
+                <span class="pipeline-label">PO ยังไม่ได้ออก</span>
+                <span class="pipeline-tag tag-blue">รอ PO</span>
+              </div>
+              <div class="pipeline-metric">
+                <strong class="pipeline-num text-blue" id="stat-no-po">0</strong>
+                <span class="pipeline-denom">/ จากที่ออก PR <span id="stat-pr-count">0</span> รายการ</span>
+              </div>
+              <div class="pipeline-bar-wrap">
+                <div class="pipeline-bar bar-blue" id="bar-po" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- 3. ยังไม่ได้รับ จากจำนวนที่ออก PO กี่รายการในหน้านี้ -->
+            <div class="pipeline-item" id="pipeline-delivery" role="button" tabindex="0" title="คลิกเพื่อกรองเฉพาะรายการที่ออก PO แล้วแต่ยังไม่ได้รับของ">
+              <div class="pipeline-item-top">
+                <span class="pipeline-label">ยังไม่ได้รับ</span>
+                <span class="pipeline-tag tag-purple">รอรับของ</span>
+              </div>
+              <div class="pipeline-metric">
+                <strong class="pipeline-num text-purple" id="stat-no-delivery">0</strong>
+                <span class="pipeline-denom">/ จากที่ออก PO <span id="stat-po-count">0</span> รายการ</span>
+              </div>
+              <div class="pipeline-bar-wrap">
+                <div class="pipeline-bar bar-purple" id="bar-delivery" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Quick Metrics Widget -->
         <div class="sidebar-stats">
           <div class="stat-card">

@@ -8,6 +8,7 @@ const state = {
   editingId: null,
   archiveView: false,
   quickFilter: 'all', // 'all' | 'soon' | 'overdue'
+  pipelineFilter: null, // null | 'no-pr' | 'no-po' | 'no-delivery'
   selectedIds: new Set(),
   editingRowIds: new Set()
 };
@@ -104,7 +105,7 @@ function deliveryStatus(value) {
   return 'normal';
 }
 
-function filteredRecords() {
+function baseFilteredRecords() {
   const query = $('search').value.trim().toLocaleLowerCase();
   const from = $('date-from').value;
   const to = $('date-to').value;
@@ -127,6 +128,26 @@ function filteredRecords() {
     }
 
     return matchesText && matchesFrom && matchesTo && matchesArea && matchesQuick;
+  });
+}
+
+function filteredRecords(base = baseFilteredRecords()) {
+  if (!state.pipelineFilter) return base;
+
+  return base.filter((record) => {
+    const hasPR = Boolean(record.requestRef && String(record.requestRef).trim());
+    const hasPO = Boolean(record.poNumber && String(record.poNumber).trim());
+
+    if (state.pipelineFilter === 'no-pr') {
+      return !hasPR;
+    }
+    if (state.pipelineFilter === 'no-po') {
+      return hasPR && !hasPO;
+    }
+    if (state.pipelineFilter === 'no-delivery') {
+      return hasPO && !state.archiveView;
+    }
+    return true;
   });
 }
 
@@ -471,7 +492,7 @@ function makeCard(record) {
   return card;
 }
 
-function updateStats(records) {
+function updateStats(records, base = records) {
   let totalSatang = 0;
   let totalItems = 0;
 
@@ -486,6 +507,52 @@ function updateStats(records) {
   if ($('stat-total-items')) {
     $('stat-total-items').textContent = `${totalItems.toLocaleString('th-TH')} ชิ้น`;
   }
+
+  updatePipelineStats(base);
+}
+
+function updatePipelineStats(records) {
+  const total = records.length;
+  
+  // 1. PR ยังไม่ได้ออก จากทั้งหมดกี่รายการในหน้านี้
+  const withPR = records.filter((r) => Boolean(r.requestRef && String(r.requestRef).trim()));
+  const withoutPR = records.filter((r) => !r.requestRef || !String(r.requestRef).trim());
+  const noPRCount = withoutPR.length;
+
+  // 2. PO ยังไม่ได้ออก จากจำนวนที่ออก PR กี่รายการในหน้านี้
+  const withPRCount = withPR.length;
+  const withPRwithoutPO = withPR.filter((r) => !r.poNumber || !String(r.poNumber).trim());
+  const noPOCount = withPRwithoutPO.length;
+
+  // 3. ยังไม่ได้รับ จากจำนวนที่ออก PO กี่รายการในหน้านี้
+  const withPO = records.filter((r) => Boolean(r.poNumber && String(r.poNumber).trim()));
+  const withPOCount = withPO.length;
+  const noDeliveryCount = state.archiveView ? 0 : withPOCount;
+
+  if ($('stat-no-pr')) $('stat-no-pr').textContent = noPRCount;
+  if ($('stat-total-records')) $('stat-total-records').textContent = total;
+  if ($('bar-pr')) {
+    const pct = total > 0 ? Math.round((noPRCount / total) * 100) : 0;
+    $('bar-pr').style.width = `${pct}%`;
+  }
+
+  if ($('stat-no-po')) $('stat-no-po').textContent = noPOCount;
+  if ($('stat-pr-count')) $('stat-pr-count').textContent = withPRCount;
+  if ($('bar-po')) {
+    const pct = withPRCount > 0 ? Math.round((noPOCount / withPRCount) * 100) : 0;
+    $('bar-po').style.width = `${pct}%`;
+  }
+
+  if ($('stat-no-delivery')) $('stat-no-delivery').textContent = noDeliveryCount;
+  if ($('stat-po-count')) $('stat-po-count').textContent = withPOCount;
+  if ($('bar-delivery')) {
+    const pct = withPOCount > 0 ? Math.round((noDeliveryCount / withPOCount) * 100) : 0;
+    $('bar-delivery').style.width = `${pct}%`;
+  }
+
+  $('pipeline-pr')?.classList.toggle('active', state.pipelineFilter === 'no-pr');
+  $('pipeline-po')?.classList.toggle('active', state.pipelineFilter === 'no-po');
+  $('pipeline-delivery')?.classList.toggle('active', state.pipelineFilter === 'no-delivery');
 }
 
 function updateBulkActionBar(visibleCount) {
@@ -528,15 +595,16 @@ function updateBulkActionBar(visibleCount) {
 }
 
 function render() {
-  const records = filteredRecords();
+  const base = baseFilteredRecords();
+  const records = filteredRecords(base);
   const isFiltered = Boolean(
     $('search').value || $('date-from').value || $('date-to').value ||
-    ($('filter-area')?.value) || state.quickFilter !== 'all'
+    ($('filter-area')?.value) || state.quickFilter !== 'all' || state.pipelineFilter
   );
 
   $('clear-search').hidden = !$('search').value;
 
-  const hasAdvancedFilter = Boolean($('date-from').value || $('date-to').value || ($('filter-area')?.value));
+  const hasAdvancedFilter = Boolean($('date-from').value || $('date-to').value || ($('filter-area')?.value) || state.pipelineFilter);
   if ($('active-filter-tag')) {
     $('active-filter-tag').hidden = !hasAdvancedFilter;
   }
@@ -553,7 +621,7 @@ function render() {
     $('archive-count').textContent = state.records.length;
   }
 
-  updateStats(records);
+  updateStats(records, base);
 
   $('record-rows').replaceChildren(...records.map(makeRow));
   $('record-cards').replaceChildren(...records.map(makeCard));
@@ -1027,6 +1095,7 @@ function clearFilters() {
   $('date-to').value = '';
   if ($('filter-area')) $('filter-area').value = '';
   state.quickFilter = 'all';
+  state.pipelineFilter = null;
   updateQuickFilterChips();
   render();
   $('search').focus();
@@ -1135,6 +1204,20 @@ function bindEvents() {
     render();
   });
 
+  // Pipeline card filter clicks
+  $('pipeline-pr')?.addEventListener('click', () => {
+    state.pipelineFilter = state.pipelineFilter === 'no-pr' ? null : 'no-pr';
+    render();
+  });
+  $('pipeline-po')?.addEventListener('click', () => {
+    state.pipelineFilter = state.pipelineFilter === 'no-po' ? null : 'no-po';
+    render();
+  });
+  $('pipeline-delivery')?.addEventListener('click', () => {
+    state.pipelineFilter = state.pipelineFilter === 'no-delivery' ? null : 'no-delivery';
+    render();
+  });
+
   // Split Screen Controls
   $('reset-form-btn')?.addEventListener('click', resetDialogForm);
   $('clear-form-btn')?.addEventListener('click', resetDialogForm);
@@ -1216,6 +1299,7 @@ function initSidebarState() {
 
 function switchToInbox() {
   if (window.innerWidth <= 900) toggleSidebar(false);
+  state.pipelineFilter = null;
   if (!state.archiveView) return;
   state.archiveView = false;
   state.selectedIds.clear();
@@ -1225,6 +1309,7 @@ function switchToInbox() {
 
 function switchToArchive() {
   if (window.innerWidth <= 900) toggleSidebar(false);
+  state.pipelineFilter = null;
   if (state.archiveView) return;
   state.archiveView = true;
   state.selectedIds.clear();

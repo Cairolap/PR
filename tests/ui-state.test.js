@@ -59,5 +59,22 @@ test('supports filtering by major area groups (CC, PP, MX, PC, PR)', async () =>
   assert.match(app, /function matchesAreaFilter\(/);
 });
 
+test('procurement pipeline status widget is present and calculated in app.js', async () => {
+  const html = await readFile(new URL('public/index.html', root), 'utf8');
+  assert.match(html, /id="sidebar-pipeline-widget"/);
+  assert.match(html, /PR ยังไม่ได้ออก/);
+  assert.match(html, /PO ยังไม่ได้ออก/);
+  assert.match(html, /ยังไม่ได้รับ/);
+
+  const css = await readFile(new URL('public/styles.css', root), 'utf8');
+  assert.match(css, /\.sidebar-pipeline-widget/);
+  assert.match(css, /\.pipeline-item/);
+
+  const app = await readFile(new URL('public/app.js', root), 'utf8');
+  assert.match(app, /function updatePipelineStats\(/);
+  assert.match(app, /state\.pipelineFilter/);
+});
+
+
 
 
