@@ -708,7 +708,7 @@ function openDialog(record = null) {
   
   renderSplitTable();
 
-  // Switch to in-page full workspace view (No popup)
+  if (window.innerWidth <= 900) toggleSidebar(false);
   document.body.classList.add('workspace-entry-active');
   if ($('view-ledger')) $('view-ledger').hidden = true;
   if ($('view-entry')) $('view-entry').hidden = false;
@@ -1134,14 +1134,17 @@ function bindEvents() {
     if (record) openDialog(record);
   });
 
-  // Mobile drawer toggle
-  $('menu-toggle')?.addEventListener('click', () => {
-    $('app-sidebar')?.classList.toggle('open');
-  });
+  // Sidebar toggle (desktop collapse / mobile drawer)
+  $('menu-toggle')?.addEventListener('click', () => toggleSidebar());
+  $('sidebar-backdrop')?.addEventListener('click', () => toggleSidebar(false));
 
-  // Escape key to close entry view or cancel table editing
+  // Escape key to close entry view, mobile sidebar, or cancel table editing
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      if (window.innerWidth <= 900 && $('app-sidebar')?.classList.contains('open')) {
+        toggleSidebar(false);
+        return;
+      }
       if (state.editingRowIds.size > 0) {
         cancelTableEditMode();
         return;
@@ -1153,7 +1156,54 @@ function bindEvents() {
   });
 }
 
+function toggleSidebar(isOpen) {
+  const isMobile = window.innerWidth <= 900;
+  const sidebar = $('app-sidebar');
+  const backdrop = $('sidebar-backdrop');
+  const toggleBtn = $('menu-toggle');
+  if (!sidebar) return;
+
+  if (isMobile) {
+    const shouldOpen = typeof isOpen === 'boolean' ? isOpen : !sidebar.classList.contains('open');
+    sidebar.classList.toggle('open', shouldOpen);
+    if (backdrop) {
+      backdrop.hidden = !shouldOpen;
+      backdrop.classList.toggle('active', shouldOpen);
+    }
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', String(shouldOpen));
+      toggleBtn.title = shouldOpen ? 'ปิดแถบเมนูด้านข้าง' : 'เปิดแถบเมนูด้านข้าง';
+    }
+  } else {
+    const isCollapsed = typeof isOpen === 'boolean'
+      ? !isOpen
+      : !document.body.classList.contains('sidebar-collapsed');
+    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', String(!isCollapsed));
+      toggleBtn.title = isCollapsed ? 'แสดงแถบเมนูด้านข้าง' : 'ซ่อนแถบเมนูด้านข้าง';
+    }
+    try {
+      localStorage.setItem('pr_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+    } catch (_) {}
+  }
+}
+
+function initSidebarState() {
+  try {
+    if (window.innerWidth > 900 && localStorage.getItem('pr_sidebar_collapsed') === 'true') {
+      document.body.classList.add('sidebar-collapsed');
+      const toggleBtn = $('menu-toggle');
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.title = 'แสดงแถบเมนูด้านข้าง';
+      }
+    }
+  } catch (_) {}
+}
+
 function switchToInbox() {
+  if (window.innerWidth <= 900) toggleSidebar(false);
   if (!state.archiveView) return;
   state.archiveView = false;
   state.selectedIds.clear();
@@ -1162,6 +1212,7 @@ function switchToInbox() {
 }
 
 function switchToArchive() {
+  if (window.innerWidth <= 900) toggleSidebar(false);
   if (state.archiveView) return;
   state.archiveView = true;
   state.selectedIds.clear();
@@ -1170,5 +1221,6 @@ function switchToArchive() {
 }
 
 setTodayLabel();
+initSidebarState();
 bindEvents();
 loadRecords();

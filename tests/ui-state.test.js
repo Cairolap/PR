@@ -31,3 +31,20 @@ test('clear form button is present in HTML and wired to reset form', async () =>
   assert.match(app, /\$\('clear-form-btn'\)\?\.addEventListener\('click', resetDialogForm\)/);
 });
 
+test('suppresses browser native search cancel button to prevent duplicate x icons', async () => {
+  const css = await readFile(new URL('public/styles.css', root), 'utf8');
+  assert.match(css, /input\[type="search"\]::-webkit-search-cancel-button/);
+  assert.match(css, /appearance:\s*none;/);
+});
+
+test('sidebar collapse functionality is styled in CSS and wired in JS', async () => {
+  const css = await readFile(new URL('public/styles.css', root), 'utf8');
+  assert.match(css, /body\.sidebar-collapsed\s+\.app-sidebar/);
+  assert.match(css, /\.sidebar-backdrop/);
+
+  const app = await readFile(new URL('public/app.js', root), 'utf8');
+  assert.match(app, /function toggleSidebar\(/);
+  assert.match(app, /\$\('menu-toggle'\)\?\.addEventListener\('click',/);
+});
+
+
