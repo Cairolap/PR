@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>ทะเบียนงานจัดซื้อ / เบิกสโตร์ (PR & Store Ledger)</title>
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#records">ข้ามไปยังรายการ</a>
+
+    <!-- Top Navigation Bar (Gmail Style Header) -->
+    <header class="app-header">
+      <div class="header-left">
+        <button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="เปิด/ปิดเมนู">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="brand">
+          <img src="/logo.png" alt="แผนกซ่อมไฟฟ้า Logo" class="brand-logo-img" />
+          <div class="brand-divider" aria-hidden="true"></div>
+          <div class="brand-info">
+            <h1 class="brand-title">จัดซื้อ <span>/</span> เบิกสโตร์</h1>
+            <p class="brand-subtitle" id="today-label">ทะเบียนคุมรายการ</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gmail-Style Global Search Bar -->
+      <div class="header-center">
+        <div class="search-bar" role="search">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <label class="sr-only" for="search">ค้นหาข้อมูล</label>
+          <input id="search" type="search" autocomplete="off" placeholder="ค้นหา ORDER, รายละเอียดสินค้า, พื้นที่, PR หรือ PO..." />
+          <button class="clear-search" id="clear-search" type="button" aria-label="ล้างคำค้น" hidden>×</button>
+          
+          <button class="search-filter-toggle" id="filter-dropdown-toggle" type="button" title="ตัวกรองขั้นสูง" aria-expanded="false" aria-controls="filter-popover">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          </button>
+        </div>
+
+        <!-- Filter Popover -->
+        <div class="filter-popover" id="filter-popover" hidden>
+          <div class="filter-popover-title">กรองขั้นสูง</div>
+          <div class="filter-date-inputs">
+            <label>จาก <input id="date-from" type="date" /></label>
+            <label>ถึง <input id="date-to" type="date" /></label>
+          </div>
+          <div class="filter-popover-field">
+            <label>พื้นที่:
+              <select id="filter-area">
+                <option value="">(ทุกพื้นที่)</option>
+                <optgroup label="CC">
+                  <option value="CC CENTER">CC CENTER</option>
+                  <option value="CC Line 1">CC Line 1</option>
+                  <option value="CC Line 2">CC Line 2</option>
+                  <option value="CC Line 4">CC Line 4</option>
+                  <option value="CC Line 5">CC Line 5</option>
+                  <option value="CC Line 6">CC Line 6</option>
+                </optgroup>
+                <optgroup label="PP">
+                  <option value="PP CENTER">PP CENTER</option>
+                  <option value="PP 28IR">PP 28IR</option>
+                  <option value="PP 22STD">PP 22STD</option>
+                  <option value="PP 28SHL1">PP 28SHL1</option>
+                  <option value="PP 28SHL2">PP 28SHL2</option>
+                  <option value="PP 28STD2">PP 28STD2</option>
+                  <option value="PP 28IR2">PP 28IR2</option>
+                  <option value="PP 28STD7">PP 28STD7</option>
+                  <option value="PP 28STD6">PP 28STD6</option>
+                  <option value="PP 28STD5">PP 28STD5</option>
+                  <option value="PP 30ED15DIE">PP 30ED15DIE</option>
+                  <option value="PP 28SHL4">PP 28SHL4</option>
+                  <option value="PP 28DEEP">PP 28DEEP</option>
+                  <option value="PP COMPOSITE 1">PP COMPOSITE 1</option>
+                  <option value="PP COMPOSITE 2">PP COMPOSITE 2</option>
+                </optgroup>
+                <optgroup label="MX">
+                  <option value="MX CENTER">MX CENTER</option>
+                  <option value="MX MX301">MX MX301</option>
+                  <option value="MX MX302">MX MX302</option>
+                  <option value="MX MX303">MX MX303</option>
+                  <option value="MX XP331">MX XP331</option>
+                  <option value="MX XP332">MX XP332</option>
+                  <option value="MX XC362">MX XC362</option>
+                  <option value="MX XC364">MX XC364</option>
+                  <option value="MX XC361">MX XC361</option>
+                  <option value="MX Scroll Shear">MX Scroll Shear</option>
+                </optgroup>
+                <optgroup label="PC">
+                  <option value="PC CENTER">PC CENTER</option>
+                  <option value="PC CP01">PC CP01</option>
+                  <option value="PC CP02">PC CP02</option>
+                  <option value="PC CP03">PC CP03</option>
+                  <option value="PC CP04">PC CP04</option>
+                  <option value="PC CP05">PC CP05</option>
+                  <option value="PC CP06">PC CP06</option>
+                  <option value="PC CP07">PC CP07</option>
+                  <option value="PC CP08">PC CP08</option>
+                  <option value="PC CP09">PC CP09</option>
+                  <option value="PC CP10">PC CP10</option>
+                  <option value="PC INJ">PC INJ</option>
+                </optgroup>
+                <optgroup label="PR">
+                  <option value="PR CENTER">PR CENTER</option>
+                  <option value="PR Line 1">PR Line 1</option>
+                  <option value="PR Line 2">PR Line 2</option>
+                  <option value="PR Line 3">PR Line 3</option>
+                  <option value="PR Line 5">PR Line 5</option>
+                  <option value="PR Line 8">PR Line 8</option>
+                  <option value="PR Line 9">PR Line 9</option>
+                  <option value="PR Line 6">PR Line 6</option>
+                  <option value="PR Line 10">PR Line 10</option>
+                  <option value="PR Line 7">PR Line 7</option>
+                  <option value="PR อื่นๆ">PR อื่นๆ</option>
+                </optgroup>
+              </select>
+            </label>
+          </div>
+          <div class="filter-popover-actions">
+            <button class="button-sm ghost" id="clear-filters-btn" type="button">ล้างตัวกรอง</button>
+            <button class="button-sm primary" id="apply-filters-btn" type="button">ตกลง</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="header-right">
+        <button class="icon-button" id="refresh-btn" type="button" title="รีเฟรชข้อมูล" aria-label="รีเฟรชข้อมูล">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+        <button class="button header-export-btn" id="export-csv" type="button" title="ดาวน์โหลดไฟล์ CSV">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>ส่งออก CSV</span>
+        </button>
+        <div class="status-indicator-badge" id="connection-status" title="สถานะการเชื่อมต่อ">
+          <span class="pulse-dot"></span>
+          <span id="connection-text">พร้อมใช้งาน</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="app-layout">
+      <!-- Left Sidebar -->
+      <aside class="app-sidebar" id="app-sidebar">
+        <div class="sidebar-compose-wrap">
+          <button class="compose-btn" id="add-record" type="button">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>สร้างรายการใหม่</span>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="หมวดหมู่รายการ">
+          <button class="nav-item active" id="nav-inbox" type="button">
+            <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+            <span class="nav-label">รายการหลัก</span>
+            <span class="nav-badge" id="inbox-count">0</span>
+          </button>
+
+          <button class="nav-item" id="nav-archive" type="button">
+            <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            <span class="nav-label">รายการที่เก็บ</span>
+            <span class="nav-badge archive-badge" id="archive-count">0</span>
+          </button>
+        </nav>
+
+        <!-- Quick Metrics Widget -->
+        <div class="sidebar-stats">
+          <div class="stat-card">
+            <span class="stat-title">ยอดรวมเงิน (หน้านี้)</span>
+            <strong class="stat-value" id="stat-total-amount">฿0.00</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-title">จำนวนสินค้า</span>
+            <strong class="stat-value" id="stat-total-items">0 ชิ้น</strong>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="public-badge">
+            <span class="badge-icon">ℹ</span>
+            <span>ลิงก์สาธารณะ เปิดดูและแก้ได้ทันที</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- VIEW 1: Main Ledger Stream View -->
+      <main class="app-main page-view" id="view-ledger">
+        <!-- Main Toolbar / Quick Filters & Bulk Actions -->
+        <section class="main-action-bar">
+          <div class="action-bar-left">
+            <!-- Filter Tabs / Chips -->
+            <div class="filter-chips" role="tablist">
+              <button class="chip active" id="filter-chip-all" type="button">
+                <span>ทั้งหมด</span>
+              </button>
+              <button class="chip" id="filter-chip-soon" type="button">
+                <span class="chip-dot dot-amber"></span>
+                <span>ส่งมอบเร็วๆ นี้</span>
+              </button>
+              <button class="chip" id="filter-chip-overdue" type="button">
+                <span class="chip-dot dot-red"></span>
+                <span>เกินกำหนด</span>
+              </button>
+            </div>
+
+            <!-- Gmail-Style Floating Bulk Action Bar -->
+            <div class="bulk-action-bar" id="bulk-action-bar" hidden>
+              <span class="bulk-count" id="bulk-selected-count">เลือกแล้ว 0 รายการ</span>
+              <div class="bulk-btn-group" id="bulk-normal-actions">
+                <button class="button-sm primary" id="bulk-edit-table-btn" type="button" title="แก้ไขข้อมูลรายการที่เลือกแบบตาราง">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  <span>แก้ไขข้อมูล</span>
+                </button>
+                <button class="button-sm ghost text-amber" id="bulk-archive-btn" type="button">
+                  <span>จัดเก็บที่เลือก</span>
+                </button>
+                <button class="button-sm ghost" id="bulk-clear-selection-btn" type="button">
+                  <span>ยกเลิก</span>
+                </button>
+              </div>
+              <div class="bulk-btn-group" id="bulk-edit-actions" hidden>
+                <button class="button-sm primary bulk-save-btn" id="bulk-save-edits-btn" type="button">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>บันทึกข้อมูลที่แก้ไข</span>
+                </button>
+                <button class="button-sm ghost" id="bulk-cancel-edits-btn" type="button">
+                  <span>✕ ยกเลิกการแก้ไข</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-bar-right">
+            <div class="active-filter-indicator" id="active-filter-tag" hidden>
+              <span>กำลังกรอง</span>
+              <button id="clear-filters-chip" type="button" aria-label="ยกเลิกตัวกรอง">×</button>
+            </div>
+            <p class="result-summary" id="result-summary" aria-live="polite">กำลังโหลดรายการ…</p>
+          </div>
+        </section>
+
+        <!-- Records Stream -->
+        <section id="records" class="records-container" aria-label="รายการใบเสนอซื้อและเบิกสโตร์" aria-busy="true">
+          <!-- Loading Skeleton -->
+          <div class="loading-state" id="loading-state">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+
+          <!-- Error State -->
+          <div class="error-state" id="error-state" hidden role="alert">
+            <div class="error-icon">!</div>
+            <strong>ยังโหลดข้อมูลไม่ได้</strong>
+            <p id="error-message">ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง</p>
+            <button class="button ghost" id="retry-load" type="button">ลองใหม่อีกครั้ง</button>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="empty-state" hidden>
+            <div class="empty-glyph" aria-hidden="true">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3 id="empty-title">ยังไม่มีรายการ</h3>
+            <p id="empty-copy">เริ่มบันทึกใบเสนอซื้อหรือการเบิกสโตร์รายการแรกได้เลย</p>
+            <button class="button primary" id="empty-add" type="button">+ เพิ่มรายการแรก</button>
+          </div>
+
+          <!-- High-Density Desktop Table -->
+          <div class="table-wrap" id="table-scroll" hidden>
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th scope="col" class="th-select">
+                    <input type="checkbox" id="select-all-checkbox" class="row-checkbox" title="เลือกทั้งหมด" aria-label="เลือกทุกรายการ" />
+                  </th>
+                  <th scope="col" class="th-date">วันที่สร้าง</th>
+                  <th scope="col" class="th-order">ORDER</th>
+                  <th scope="col" class="th-area">พื้นที่</th>
+                  <th scope="col" class="th-desc">Description (รายละเอียด)</th>
+                  <th scope="col" class="th-num number">Qty</th>
+                  <th scope="col" class="th-price number">Price (฿)</th>
+                  <th scope="col" class="th-ref">PR / เบิกสโตร์</th>
+                  <th scope="col" class="th-po">PO</th>
+                  <th scope="col" class="th-delivery">กำหนดส่งมอบ</th>
+                  <th scope="col" class="th-actions"><span class="sr-only">จัดการ</span></th>
+                </tr>
+              </thead>
+              <tbody id="record-rows"></tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Cards View -->
+          <div class="record-cards" id="record-cards" hidden></div>
+        </section>
+
+        <footer class="app-footer">
+          <p>ระบบบันทึกงานจัดซื้อและเบิกสโตร์ • ข้อมูลปลอดภัยด้วย Cloudflare Edge • จัดเก็บเพื่อซ่อนรายการโดยไม่สูญหาย</p>
+        </footer>
+      </main>
+
+      <!-- VIEW 2: Full-Page Split-Screen Entry Workspace (No Popup!) -->
+      <main class="app-main page-view entry-page-view" id="view-entry" hidden>
+        <header class="entry-page-header">
+          <div class="entry-header-left">
+            <button class="button-sm ghost back-btn" id="close-dialog" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              <span>กลับสู่หน้ารายการ</span>
+            </button>
+            <div class="entry-title-wrap">
+              <span class="entry-kicker" id="dialog-kicker">ENTRY WORKSPACE</span>
+              <h2 class="entry-title" id="dialog-title">จัดการรายการจัดซื้อ / เบิกสโตร์</h2>
+            </div>
+          </div>
+          <div class="entry-header-right">
+            <span class="entry-tip-text">กรอกฝั่งซ้าย ข้อมูลจะอัปเดตเข้าตารางฝั่งขวาแบบ Real-time</span>
+          </div>
+        </header>
+
+        <div class="split-workspace-body">
+          <!-- LEFT PANEL: Input Form -->
+          <div class="split-left-pane">
+            <div class="split-pane-header">
+              <h3 class="pane-title" id="form-mode-title">กรอกข้อมูลรายการ</h3>
+              <button class="button-sm ghost" id="reset-form-btn" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                <span>ล้างข้อมูล</span>
+              </button>
+            </div>
+
+            <form id="record-form" class="fullscreen-form" novalidate>
+              <div class="form-grid-single">
+                <div class="form-row-2col">
+                  <label class="field required">
+                    <span class="field-label">วันที่สร้าง</span>
+                    <input id="created-date" name="createdDate" type="date" required />
+                    <small class="field-error" id="error-createdDate"></small>
+                  </label>
+
+                  <label class="field required">
+                    <span class="field-label">ORDER</span>
+                    <input id="order-number" name="orderNumber" maxlength="80" autocomplete="off" required placeholder="เช่น ORDER-2026-001" />
+                    <small class="field-error" id="error-orderNumber"></small>
+                  </label>
+                </div>
+
+                <div class="form-row-2col">
+                  <label class="field">
+                    <span class="field-label">พื้นที่ (Area)</span>
+                    <select id="area" name="area">
+                      <option value="">-- เลือกพื้นที่ --</option>
+                      <optgroup label="CC">
+                        <option value="CC CENTER">CC CENTER</option>
+                        <option value="CC Line 1">CC Line 1</option>
+                        <option value="CC Line 2">CC Line 2</option>
+                        <option value="CC Line 4">CC Line 4</option>
+                        <option value="CC Line 5">CC Line 5</option>
+                        <option value="CC Line 6">CC Line 6</option>
+                      </optgroup>
+                      <optgroup label="PP">
+                        <option value="PP CENTER">PP CENTER</option>
+                        <option value="PP 28IR">PP 28IR</option>
+                        <option value="PP 22STD">PP 22STD</option>
+                        <option value="PP 28SHL1">PP 28SHL1</option>
+                        <option value="PP 28SHL2">PP 28SHL2</option>
+                        <option value="PP 28STD2">PP 28STD2</option>
+                        <option value="PP 28IR2">PP 28IR2</option>
+                        <option value="PP 28STD7">PP 28STD7</option>
+                        <option value="PP 28STD6">PP 28STD6</option>
+                        <option value="PP 28STD5">PP 28STD5</option>
+                        <option value="PP 30ED15DIE">PP 30ED15DIE</option>
+                        <option value="PP 28SHL4">PP 28SHL4</option>
+                        <option value="PP 28DEEP">PP 28DEEP</option>
+                        <option value="PP COMPOSITE 1">PP COMPOSITE 1</option>
+                        <option value="PP COMPOSITE 2">PP COMPOSITE 2</option>
+                      </optgroup>
+                      <optgroup label="MX">
+                        <option value="MX CENTER">MX CENTER</option>
+                        <option value="MX MX301">MX MX301</option>
+                        <option value="MX MX302">MX MX302</option>
+                        <option value="MX MX303">MX MX303</option>
+                        <option value="MX XP331">MX XP331</option>
+                        <option value="MX XP332">MX XP332</option>
+                        <option value="MX XC362">MX XC362</option>
+                        <option value="MX XC364">MX XC364</option>
+                        <option value="MX XC361">MX XC361</option>
+                        <option value="MX Scroll Shear">MX Scroll Shear</option>
+                      </optgroup>
+                      <optgroup label="PC">
+                        <option value="PC CENTER">PC CENTER</option>
+                        <option value="PC CP01">PC CP01</option>
+                        <option value="PC CP02">PC CP02</option>
+                        <option value="PC CP03">PC CP03</option>
+                        <option value="PC CP04">PC CP04</option>
+                        <option value="PC CP05">PC CP05</option>
+                        <option value="PC CP06">PC CP06</option>
+                        <option value="PC CP07">PC CP07</option>
+                        <option value="PC CP08">PC CP08</option>
+                        <option value="PC CP09">PC CP09</option>
+                        <option value="PC CP10">PC CP10</option>
+                        <option value="PC INJ">PC INJ</option>
+                      </optgroup>
+                      <optgroup label="PR">
+                        <option value="PR CENTER">PR CENTER</option>
+                        <option value="PR Line 1">PR Line 1</option>
+                        <option value="PR Line 2">PR Line 2</option>
+                        <option value="PR Line 3">PR Line 3</option>
+                        <option value="PR Line 5">PR Line 5</option>
+                        <option value="PR Line 8">PR Line 8</option>
+                        <option value="PR Line 9">PR Line 9</option>
+                        <option value="PR Line 6">PR Line 6</option>
+                        <option value="PR Line 10">PR Line 10</option>
+                        <option value="PR Line 7">PR Line 7</option>
+                        <option value="PR อื่นๆ">PR อื่นๆ</option>
+                      </optgroup>
+                    </select>
+                    <small class="field-error" id="error-area"></small>
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label">กำหนดส่งมอบ (Delivery Date)</span>
+                    <input id="delivery-date" name="deliveryDate" type="date" />
+                    <small class="field-error" id="error-deliveryDate"></small>
+                  </label>
+                </div>
+
+                <label class="field required">
+                  <span class="field-label">รายละเอียดสินค้า / บริการ (Description)</span>
+                  <textarea id="description" name="description" maxlength="2000" rows="3" required placeholder="ระบุชื่อสินค้า สเปก หรือรายละเอียดที่ตรวจสอบง่าย"></textarea>
+                  <small class="field-error" id="error-description"></small>
+                </label>
+
+                <div class="form-row-2col">
+                  <label class="field required">
+                    <span class="field-label">จำนวน (Qty)</span>
+                    <input id="quantity" name="quantity" type="number" min="0.0001" step="any" inputmode="decimal" required placeholder="0" />
+                    <small class="field-error" id="error-quantity"></small>
+                  </label>
+
+                  <!-- Price is now completely optional (no required asterisk) -->
+                  <label class="field">
+                    <span class="field-label">ราคาต่อหน่วยหรือยอดรวม (Price - บาท) <span class="field-optional-tag">(ไม่บังคับ)</span></span>
+                    <input id="price" name="price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00 (เว้นว่างได้)" />
+                    <small class="field-error" id="error-price"></small>
+                  </label>
+                </div>
+
+                <div class="form-row-2col">
+                  <label class="field">
+                    <span class="field-label">เลขที่ PR / เบิกสโตร์</span>
+                    <input id="request-ref" name="requestRef" maxlength="120" autocomplete="off" placeholder="เช่น PR-2026-004 หรือ เบิกสโตร์-012" />
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label">เลขที่ PO</span>
+                    <input id="po-number" name="poNumber" maxlength="120" autocomplete="off" placeholder="เช่น PO-2026-019" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="fullscreen-form-footer">
+                <button class="button ghost" id="cancel-dialog" type="button">ปิดหน้าต่าง</button>
+                <button class="button ghost" id="clear-form-btn" type="button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                  <span>ล้างข้อมูล</span>
+                </button>
+                <button class="button primary" id="save-record" type="submit">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>บันทึกรายการ</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT PANEL: Live Table View -->
+          <div class="split-right-pane">
+            <div class="split-pane-header">
+              <div class="split-header-info">
+                <h3 class="pane-title">ตารางรายการจัดซื้อล่าสุด</h3>
+                <span class="split-summary-badge" id="split-table-count">0 รายการ</span>
+              </div>
+              <span class="split-note">คลิกแถวเพื่อดึงข้อมูลมาแก้ไขที่ฝั่งซ้าย</span>
+            </div>
+
+            <div class="split-table-scroll">
+              <table class="ledger-table split-table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="th-date">วันที่สร้าง</th>
+                    <th scope="col" class="th-order">ORDER</th>
+                    <th scope="col" class="th-area">พื้นที่</th>
+                    <th scope="col" class="th-desc">Description</th>
+                    <th scope="col" class="th-num number">Qty</th>
+                    <th scope="col" class="th-price number">Price (฿)</th>
+                    <th scope="col" class="th-ref">PR</th>
+                    <th scope="col" class="th-po">PO</th>
+                    <th scope="col" class="th-delivery">ส่งมอบ</th>
+                  </tr>
+                </thead>
+                <tbody id="split-record-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Hidden compatibility buttons for legacy hooks -->
+    <div style="display: none;">
+      <button id="view-archive" type="button"></button>
+      <button id="clear-filters" type="button"></button>
+    </div>
+
+    <!-- Batch Edit Area Dialog -->
+    <dialog id="batch-area-dialog" class="record-dialog" aria-labelledby="batch-dialog-title">
+      <form id="batch-area-form">
+        <header class="dialog-header">
+          <div class="dialog-title-wrap">
+            <span class="dialog-kicker">BULK ACTION</span>
+            <h2 id="batch-dialog-title">แก้ไขพื้นที่หลายรายการพร้อมกัน</h2>
+          </div>
+          <button class="icon-button close-dialog-btn" id="close-batch-dialog" type="button" aria-label="ปิด">×</button>
+        </header>
+        <div class="dialog-body">
+          <p id="batch-dialog-desc" class="dialog-info-text">เลือกพื้นที่ใหม่สำหรับรายการที่เลือก</p>
+          <label class="field required">
+            <span class="field-label">เลือกพื้นที่ใหม่</span>
+            <select id="batch-area-select" required>
+              <option value="">-- กรุณาเลือกพื้นที่ --</option>
+              <optgroup label="CC">
+                <option value="CC CENTER">CC CENTER</option>
+                <option value="CC Line 1">CC Line 1</option>
+                <option value="CC Line 2">CC Line 2</option>
+                <option value="CC Line 4">CC Line 4</option>
+                <option value="CC Line 5">CC Line 5</option>
+                <option value="CC Line 6">CC Line 6</option>
+              </optgroup>
+              <optgroup label="PP">
+                <option value="PP CENTER">PP CENTER</option>
+                <option value="PP 28IR">PP 28IR</option>
+                <option value="PP 22STD">PP 22STD</option>
+                <option value="PP 28SHL1">PP 28SHL1</option>
+                <option value="PP 28SHL2">PP 28SHL2</option>
+                <option value="PP 28STD2">PP 28STD2</option>
+                <option value="PP 28IR2">PP 28IR2</option>
+                <option value="PP 28STD7">PP 28STD7</option>
+                <option value="PP 28STD6">PP 28STD6</option>
+                <option value="PP 28STD5">PP 28STD5</option>
+                <option value="PP 30ED15DIE">PP 30ED15DIE</option>
+                <option value="PP 28SHL4">PP 28SHL4</option>
+                <option value="PP 28DEEP">PP 28DEEP</option>
+                <option value="PP COMPOSITE 1">PP COMPOSITE 1</option>
+                <option value="PP COMPOSITE 2">PP COMPOSITE 2</option>
+              </optgroup>
+              <optgroup label="MX">
+                <option value="MX CENTER">MX CENTER</option>
+                <option value="MX MX301">MX MX301</option>
+                <option value="MX MX302">MX MX302</option>
+                <option value="MX MX303">MX MX303</option>
+                <option value="MX XP331">MX XP331</option>
+                <option value="MX XP332">MX XP332</option>
+                <option value="MX XC362">MX XC362</option>
+                <option value="MX XC364">MX XC364</option>
+                <option value="MX XC361">MX XC361</option>
+                <option value="MX Scroll Shear">MX Scroll Shear</option>
+              </optgroup>
+              <optgroup label="PC">
+                <option value="PC CENTER">PC CENTER</option>
+                <option value="PC CP01">PC CP01</option>
+                <option value="PC CP02">PC CP02</option>
+                <option value="PC CP03">PC CP03</option>
+                <option value="PC CP04">PC CP04</option>
+                <option value="PC CP05">PC CP05</option>
+                <option value="PC CP06">PC CP06</option>
+                <option value="PC CP07">PC CP07</option>
+                <option value="PC CP08">PC CP08</option>
+                <option value="PC CP09">PC CP09</option>
+                <option value="PC CP10">PC CP10</option>
+                <option value="PC INJ">PC INJ</option>
+              </optgroup>
+              <optgroup label="PR">
+                <option value="PR CENTER">PR CENTER</option>
+                <option value="PR Line 1">PR Line 1</option>
+                <option value="PR Line 2">PR Line 2</option>
+                <option value="PR Line 3">PR Line 3</option>
+                <option value="PR Line 5">PR Line 5</option>
+                <option value="PR Line 8">PR Line 8</option>
+                <option value="PR Line 9">PR Line 9</option>
+                <option value="PR Line 6">PR Line 6</option>
+                <option value="PR Line 10">PR Line 10</option>
+                <option value="PR Line 7">PR Line 7</option>
+                <option value="PR อื่นๆ">PR อื่นๆ</option>
+              </optgroup>
+            </select>
+          </label>
+        </div>
+        <footer class="dialog-actions">
+          <button class="button ghost" id="cancel-batch-dialog" type="button">ยกเลิก</button>
+          <button class="button primary" id="save-batch-area" type="submit">อัปเดตทุกรายการที่เลือก</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

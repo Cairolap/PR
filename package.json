@@ -1,0 +1,19 @@
+{
+  "name": "purchase-requisition-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-isolation=none tests/*.test.js",
+    "check": "node --check src/core.js && node --check src/worker.js && node --check public/app.js && node --check scripts/preview.mjs",
+    "preview": "node scripts/preview.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create purchase-requisition",
+    "db:migrate:local": "wrangler d1 execute purchase-requisition --local --file=./schema.sql",
+    "db:migrate:remote": "wrangler d1 execute purchase-requisition --remote --file=./schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
