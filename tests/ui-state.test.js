@@ -47,4 +47,17 @@ test('sidebar collapse functionality is styled in CSS and wired in JS', async ()
   assert.match(app, /\$\('menu-toggle'\)\?\.addEventListener\('click',/);
 });
 
+test('supports filtering by major area groups (CC, PP, MX, PC, PR)', async () => {
+  const html = await readFile(new URL('public/index.html', root), 'utf8');
+  assert.match(html, /<option value="CC">กลุ่ม CC ทั้งหมด<\/option>/);
+  assert.match(html, /<option value="PP">กลุ่ม PP ทั้งหมด<\/option>/);
+  assert.match(html, /<option value="MX">กลุ่ม MX ทั้งหมด<\/option>/);
+  assert.match(html, /<option value="PC">กลุ่ม PC ทั้งหมด<\/option>/);
+  assert.match(html, /<option value="PR">กลุ่ม PR ทั้งหมด<\/option>/);
+
+  const app = await readFile(new URL('public/app.js', root), 'utf8');
+  assert.match(app, /function matchesAreaFilter\(/);
+});
+
+
 

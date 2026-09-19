@@ -12,6 +12,26 @@ const state = {
   editingRowIds: new Set()
 };
 
+const AREA_GROUPS = {
+  'CC': ['CC CENTER', 'CC Line 1', 'CC Line 2', 'CC Line 4', 'CC Line 5', 'CC Line 6'],
+  'PP': ['PP CENTER', 'PP 28IR', 'PP 22STD', 'PP 28SHL1', 'PP 28SHL2', 'PP 28STD2', 'PP 28IR2', 'PP 28STD7', 'PP 28STD6', 'PP 28STD5', 'PP 30ED15DIE', 'PP 28SHL4', 'PP 28DEEP', 'PP COMPOSITE 1', 'PP COMPOSITE 2'],
+  'MX': ['MX CENTER', 'MX MX301', 'MX MX302', 'MX MX303', 'MX XP331', 'MX XP332', 'MX XC362', 'MX XC364', 'MX XC361', 'MX Scroll Shear'],
+  'PC': ['PC CENTER', 'PC CP01', 'PC CP02', 'PC CP03', 'PC CP04', 'PC CP05', 'PC CP06', 'PC CP07', 'PC CP08', 'PC CP09', 'PC CP10', 'PC INJ'],
+  'PR': ['PR CENTER', 'PR Line 1', 'PR Line 2', 'PR Line 3', 'PR Line 5', 'PR Line 8', 'PR Line 9', 'PR Line 6', 'PR Line 10', 'PR Line 7', 'PR อื่นๆ']
+};
+
+function matchesAreaFilter(recordArea, filter) {
+  if (!filter) return true;
+  if (!recordArea) return false;
+
+  const group = filter.replace(/^GROUP:/, '');
+  if (AREA_GROUPS[group]) {
+    return AREA_GROUPS[group].includes(recordArea) || recordArea.startsWith(group + ' ') || recordArea === group;
+  }
+
+  return recordArea === filter;
+}
+
 let toastTimer;
 
 function localDate() {
@@ -96,7 +116,7 @@ function filteredRecords() {
     
     const matchesFrom = !from || record.createdDate >= from;
     const matchesTo = !to || record.createdDate <= to;
-    const matchesArea = !areaFilter || record.area === areaFilter;
+    const matchesArea = matchesAreaFilter(record.area, areaFilter);
 
     let matchesQuick = true;
     const status = deliveryStatus(record.deliveryDate);
@@ -131,14 +151,6 @@ function cell(value, className = '') {
   element.textContent = value || '—';
   return element;
 }
-
-const AREA_GROUPS = {
-  'CC': ['CC CENTER', 'CC Line 1', 'CC Line 2', 'CC Line 4', 'CC Line 5', 'CC Line 6'],
-  'PP': ['PP CENTER', 'PP 28IR', 'PP 22STD', 'PP 28SHL1', 'PP 28SHL2', 'PP 28STD2', 'PP 28IR2', 'PP 28STD7', 'PP 28STD6', 'PP 28STD5', 'PP 30ED15DIE', 'PP 28SHL4', 'PP 28DEEP', 'PP COMPOSITE 1', 'PP COMPOSITE 2'],
-  'MX': ['MX CENTER', 'MX MX301', 'MX MX302', 'MX MX303', 'MX XP331', 'MX XP332', 'MX XC362', 'MX XC364', 'MX XC361', 'MX Scroll Shear'],
-  'PC': ['PC CENTER', 'PC CP01', 'PC CP02', 'PC CP03', 'PC CP04', 'PC CP05', 'PC CP06', 'PC CP07', 'PC CP08', 'PC CP09', 'PC CP10', 'PC INJ'],
-  'PR': ['PR CENTER', 'PR Line 1', 'PR Line 2', 'PR Line 3', 'PR Line 5', 'PR Line 8', 'PR Line 9', 'PR Line 6', 'PR Line 10', 'PR Line 7', 'PR อื่นๆ']
-};
 
 function createAreaSelect(currentValue = '') {
   const select = document.createElement('select');
